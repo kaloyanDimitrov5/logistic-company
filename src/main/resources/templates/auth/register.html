@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body{
+          background:linear-gradient(135deg,#0d6efd 0%,#6c63ff 100%);
+          min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;
+          font-family:'Segoe UI', Roboto, sans-serif;
+        }
+        .card{
+          border:none;border-radius:20px;box-shadow:0 10px 28px rgba(0,0,0,.12);
+          max-width:640px;width:100%;
+        }
+        .card-header{
+          border:0;border-radius:20px 20px 0 0;background:#fff;
+        }
+        .form-control{border-radius:10px}
+        .btn-rounded{border-radius:10px}
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header p-4 d-flex align-items-center justify-content-between">
+        <div>
+            <h3 class="mb-0 text-primary">Create Client Account</h3>
+            <small class="text-muted">It takes less than a minute</small>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm btn-rounded" th:href="@{/}">Home</a>
+    </div>
+
+    <div class="card-body p-4">
+        <form th:action="@{/auth/register}" th:object="${form}" method="post" class="row g-3">
+            <div class="col-12">
+                <label class="form-label">Full name</label>
+                <input th:field="*{fullName}" class="form-control" placeholder="e.g., Maria Ivanova">
+                <div class="text-danger small" th:errors="*{fullName}"></div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Email</label>
+                <input th:field="*{email}" type="email" class="form-control" placeholder="name@example.com">
+                <div class="text-danger small" th:errors="*{email}"></div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Password</label>
+                <input th:field="*{password}" type="password" class="form-control" placeholder="••••••••">
+                <div class="text-danger small" th:errors="*{password}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Phone</label>
+                <input th:field="*{phone}" class="form-control" placeholder="+359 88 123 4567">
+                <div class="text-danger small" th:errors="*{phone}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">City</label>
+                <input th:field="*{city}" class="form-control" placeholder="Sofia">
+                <div class="text-danger small" th:errors="*{city}"></div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Address</label>
+                <input th:field="*{address}" class="form-control" placeholder="ul. Example 10, ap. 3">
+                <div class="text-danger small" th:errors="*{address}"></div>
+            </div>
+
+            <div class="col-12 d-grid d-sm-flex gap-2">
+                <button class="btn btn-primary btn-rounded px-4" type="submit">Create account</button>
+                <a class="btn btn-outline-secondary btn-rounded" th:href="@{/auth/login}">Already have an account?</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

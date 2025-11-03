@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Logistics Company</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        body{background:linear-gradient(135deg,#0d6efd 0%,#6c63ff 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;font-family:'Segoe UI',Roboto,sans-serif}
+        .container-box{background:#fff;border-radius:20px;box-shadow:0 4px 25px rgba(0,0,0,.15);padding:28px 28px 36px;max-width:980px;width:100%}
+        h1{color:#0d6efd;font-weight:700;margin-bottom:6px;text-align:center}
+        .subtitle{color:#6c757d;margin-bottom:20px;text-align:center}
+        .btn{border-radius:10px;font-weight:600;padding:10px 20px}
+        .section-title{font-weight:600;margin-top:28px;color:#0d6efd}
+        .list-group-item{border:none;border-radius:10px;margin-bottom:8px;transition:all .2s}
+        .list-group-item:hover{background:#0d6efd;color:#fff}
+        footer{font-size:.85rem;margin-top:24px;color:#888;text-align:center}
+        .header-line{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:8px}
+        .user-chip{background:rgba(13,110,253,.08);border-radius:999px;padding:8px 14px;display:flex;gap:10px;align-items:center}
+        .avatar{width:28px;height:28px;border-radius:50%;background:#0d6efd}
+        .card{border:none;border-radius:14px}
+        .card-header{background:#f7f9ff;border:0;border-radius:14px 14px 0 0}
+        @media (max-width:576px){
+          .header-line{flex-direction:column;align-items:stretch;gap:10px}
+          .auth-actions, .user-actions{display:flex;gap:10px;justify-content:center}
+        }
+    </style>
+</head>
+<body>
+<div class="container-box">
+
+    <!-- Top: login/register or user + logout -->
+    <div class="header-line">
+        <div class="flex-grow-1">
+            <h1 class="mb-0">Logistics Company</h1>
+            <p class="subtitle mb-0">Manage shipments, clients, and offices efficiently</p>
+        </div>
+
+        <div class="auth-actions" sec:authorize="isAnonymous()">
+            <a class="btn btn-outline-primary" th:href="@{/auth/login}">Login</a>
+            <a class="btn btn-outline-secondary" th:href="@{/auth/register}">Register</a>
+        </div>
+
+        <div class="user-actions d-flex align-items-center gap-2" sec:authorize="isAuthenticated()">
+            <div class="user-chip">
+                <span class="avatar"></span>
+                <span class="fw-semibold" sec:authentication="name">user@example.com</span>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button class="btn btn-outline-danger btn-sm" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Authenticated -->
+    <div sec:authorize="isAuthenticated()">
+        <div class="row g-3">
+            <!-- ===== STAFF AREA ===== -->
+            <div class="col-12 col-lg-7" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
+                <h4 class="section-title">Reports (Staff)</h4>
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action" th:href="@{/reports/employees}">👨‍💼 All Employees</a>
+                    <a class="list-group-item list-group-item-action" th:href="@{/reports/clients}">👥 All Clients</a>
+                    <a class="list-group-item list-group-item-action" th:href="@{/shipments}">📦 All Shipments</a>
+                    <a class="list-group-item list-group-item-action" th:href="@{/reports/shipments/not-delivered}">🚚 Not Delivered</a>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header"><strong>Quick Filters</strong></div>
+                    <div class="card-body">
+                        <form class="row g-2" onsubmit="goEmpSelect(event)">
+                            <div class="col-12 col-sm-7">
+                                <label class="form-label mb-1">Shipments by Employee</label>
+                                <select id="empUserSelect" class="form-select">
+                                    <option value="">Select employee…</option>
+                                    <option th:each="e : ${employees}" th:value="${e.user.id}"
+                                            th:text="${e.user.fullName + ' (UserID: ' + e.user.id + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-sm-5 d-flex align-items-end">
+                                <button class="btn btn-outline-primary w-100" type="submit"
+                                        th:disabled="${#lists.isEmpty(employees)}">Open Report</button>
+                            </div>
+                        </form>
+
+                        <form class="row g-2 mt-2" onsubmit="goSentSelect(event)">
+                            <div class="col-12 col-sm-7">
+                                <label class="form-label mb-1">Shipments Sent by Client</label>
+                                <select id="sentClientSelect" class="form-select">
+                                    <option value="">Select client…</option>
+                                    <option th:each="c : ${clients}" th:value="${c.id}"
+                                            th:text="${c.user.fullName + ' (ID: ' + c.id + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-sm-5 d-flex align-items-end">
+                                <button class="btn btn-outline-primary w-100" type="submit"
+                                        th:disabled="${#lists.isEmpty(clients)}">Open Report</button>
+                            </div>
+                        </form>
+
+                        <form class="row g-2 mt-2" onsubmit="goReceivedSelect(event)">
+                            <div class="col-12 col-sm-7">
+                                <label class="form-label mb-1">Shipments Received by Client</label>
+                                <select id="recvClientSelect" class="form-select">
+                                    <option value="">Select client…</option>
+                                    <option th:each="c : ${clients}" th:value="${c.id}"
+                                            th:text="${c.user.fullName + ' (ID: ' + c.id + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-sm-5 d-flex align-items-end">
+                                <button class="btn btn-outline-primary w-100" type="submit"
+                                        th:disabled="${#lists.isEmpty(clients)}">Open Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header"><strong>Revenue (Period)</strong></div>
+                    <div class="card-body">
+                        <form class="row g-2" th:action="@{/reports/revenue}" method="get">
+                            <div class="col-12 col-sm-4">
+                                <label class="form-label mb-1">From</label>
+                                <input type="datetime-local" name="from" class="form-control" required>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <label class="form-label mb-1">To</label>
+                                <input type="datetime-local" name="to" class="form-control" required>
+                            </div>
+                            <div class="col-12 col-sm-4 d-flex align-items-end">
+                                <button class="btn btn-primary w-100" type="submit">View Revenue</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== STAFF MANAGEMENT ===== -->
+            <div class="col-12 col-lg-5" sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
+                <h4 class="section-title">Management (Staff)</h4>
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action" th:href="@{/clients}">🧾 Manage Clients</a>
+                    <a class="list-group-item list-group-item-action" th:href="@{/offices}">🏢 Manage Offices</a>
+<!--                    <a class="list-group-item list-group-item-action" th:href="@{/admin/users}">👤 Manage Users</a>-->
+                    <a class="list-group-item list-group-item-action" th:href="@{/companies}">🏭 Manage Company Info</a>
+                </div>
+            </div>
+
+            <!-- ===== CLIENT AREA ===== -->
+            <div class="col-12" sec:authorize="hasRole('CLIENT')">
+                <h4 class="section-title">My Shipments</h4>
+                <div class="list-group">
+                    <a class="list-group-item" th:href="@{/my/sent}">📮 Sent by Me</a>
+                    <a class="list-group-item" th:href="@{/my/received}">📥 Received by Me</a>
+                </div>
+                <div class="alert alert-info mt-3">
+                    You can track the status of your shipments from these reports.
+                </div>
+            </div>
+        </div>
+
+        <footer>© 2025 Logistics Company</footer>
+    </div>
+</div>
+
+<script>
+    function goEmpSelect(e){ e.preventDefault();
+      const v = document.getElementById('empUserSelect').value;
+      if(v) window.location.href = `/reports/shipments/by-employee/${encodeURIComponent(v)}`;
+    }
+    function goSentSelect(e){ e.preventDefault();
+      const v = document.getElementById('sentClientSelect').value;
+      if(v) window.location.href = `/reports/shipments/sent/${encodeURIComponent(v)}`;
+    }
+    function goReceivedSelect(e){ e.preventDefault();
+      const v = document.getElementById('recvClientSelect').value;
+      if(v) window.location.href = `/reports/shipments/received/${encodeURIComponent(v)}`;
+    }
+</script>
+</body>
+</html>

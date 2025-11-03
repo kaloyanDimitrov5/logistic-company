@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit User</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body class="container py-4">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h3 class="mb-0 text-primary">Edit User</h3>
+        <small class="text-muted">ID: <span th:text="${user.id}">1</span></small>
+    </div>
+    <a class="btn btn-outline-secondary" th:href="@{/admin/users}">Back</a>
+</div>
+
+<form th:action="@{'/admin/users/' + ${user.id}}" th:object="${form}" method="post" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <label class="form-label">Full name</label>
+        <input class="form-control" th:field="*{fullName}" required>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" th:field="*{email}" required>
+    </div>
+    <div class="col-md-3 d-flex align-items-center">
+        <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" th:field="*{enabled}" id="enabled">
+            <label class="form-check-label" for="enabled">Enabled</label>
+        </div>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Roles</label>
+        <div class="d-flex gap-3 flex-wrap">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:field="*{roleAdmin}" id="rAdmin">
+                <label class="form-check-label" for="rAdmin">ADMIN</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:field="*{roleEmployee}" id="rEmployee">
+                <label class="form-check-label" for="rEmployee">EMPLOYEE</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" th:field="*{roleClient}" id="rClient">
+                <label class="form-check-label" for="rClient">CLIENT</label>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <button class="btn btn-success">Save Changes</button>
+    </div>
+</form>
+
+<div class="row g-3">
+    <!-- Client profile card -->
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Client Profile</strong>
+                <span class="badge" th:classappend="${hasClientProfile} ? 'bg-success' : 'bg-secondary'"
+                      th:text="${hasClientProfile} ? 'Present' : 'Absent'">Absent</span>
+            </div>
+            <div class="card-body">
+                <form th:if="${!hasClientProfile}" th:action="@{'/admin/users/' + ${user.id} + '/client/create'}"
+                      th:object="${clientForm}" method="post" class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input class="form-control" th:field="*{phone}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">City</label>
+                        <input class="form-control" th:field="*{city}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <input class="form-control" th:field="*{address}">
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary">Create Client Profile</button>
+                    </div>
+                </form>
+
+                <form th:if="${hasClientProfile}" th:action="@{'/admin/users/' + ${user.id} + '/client/remove'}"
+                      method="post" onsubmit="return confirm('Remove client profile?');">
+                    <button class="btn btn-outline-danger">Remove Client Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee profile card -->
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Employee Profile</strong>
+                <span class="badge" th:classappend="${hasEmployeeProfile} ? 'bg-success' : 'bg-secondary'"
+                      th:text="${hasEmployeeProfile} ? 'Present' : 'Absent'">Absent</span>
+            </div>
+            <div class="card-body">
+                <form th:if="${!hasEmployeeProfile}" th:action="@{'/admin/users/' + ${user.id} + '/employee/create'}"
+                      th:object="${employeeForm}" method="post" class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Company</label>
+                        <select class="form-select" th:field="*{companyId}" required>
+                            <option value="">Select company</option>
+                            <option th:each="c : ${companies}" th:value="${c.id}" th:text="${c.name}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Office</label>
+                        <select class="form-select" th:field="*{officeId}" required>
+                            <option value="">Select office</option>
+                            <option th:each="o : ${offices}" th:value="${o.id}"
+                                    th:text="${o.city + ' - ' + o.addressLine}"></option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Position</label>
+                        <input class="form-control" th:field="*{position}" placeholder="Courier / Office Staff">
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary">Create Employee Profile</button>
+                    </div>
+                </form>
+
+                <form th:if="${hasEmployeeProfile}" th:action="@{'/admin/users/' + ${user.id} + '/employee/remove'}"
+                      method="post" onsubmit="return confirm('Remove employee profile?');">
+                    <button class="btn btn-outline-danger">Remove Employee Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
