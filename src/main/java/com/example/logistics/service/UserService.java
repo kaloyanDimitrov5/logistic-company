@@ -110,7 +110,6 @@ public class UserService {
         u.setEmail(email);
         u.setPassword(passwordEncoder.encode(rawPassword));
         u.setEnabled(enabled);
-        // no role here; caller decides (EMPLOYEE)
         return userRepo.save(u);
     }
 

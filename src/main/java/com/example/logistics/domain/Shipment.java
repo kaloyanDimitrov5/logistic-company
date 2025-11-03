@@ -41,7 +41,6 @@ public class Shipment {
     @ManyToOne @JoinColumn(name="to_office_id")
     private Office toOffice; // when deliveryType=OFFICE
 
-    // addresses snapshot
     @Column(nullable=false) private String fromCity;
     @Column(nullable=false) private String fromAddressLine;
     @Column(nullable=false) private String toCity;

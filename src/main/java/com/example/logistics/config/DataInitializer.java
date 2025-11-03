@@ -97,7 +97,7 @@ public class DataInitializer implements CommandLineRunner {
                     "+359888555666", "Varna", "Primorski 12");
         }
 
-        // Client profiles (we need these for shipments)
+        // Client profiles
         ClientProfile alice = clientProfileRepo.findByUserEmail("alice@demo.com")
                 .orElseThrow(() -> new IllegalStateException("Client Alice missing"));
         ClientProfile bob = clientProfileRepo.findByUserEmail("bob@demo.com")
@@ -105,7 +105,7 @@ public class DataInitializer implements CommandLineRunner {
         ClientProfile carol = clientProfileRepo.findByUserEmail("carol@demo.com")
                 .orElseThrow(() -> new IllegalStateException("Client Carol missing"));
 
-        // 6) Make sure admin has an EmployeeProfile to appear as 'registeredBy'
+
         EmployeeProfile adminEmp = employeeProfileRepo.findByUserId(admin.getId())
                 .orElseGet(() -> {
                     EmployeeProfile ep = new EmployeeProfile();
@@ -116,7 +116,6 @@ public class DataInitializer implements CommandLineRunner {
                     return employeeProfileRepo.save(ep);
                 });
 
-        // 7) Seed shipments with all required non-null fields
         if (shipmentRepo.count() == 0) {
             // TRK-001: Alice -> Bob, TO_OFFICE (Sofia)
             Shipment s1 = new Shipment();
@@ -127,7 +126,6 @@ public class DataInitializer implements CommandLineRunner {
             s1.setPrice(new BigDecimal("8.90"));
             s1.setDeliveryType(DeliveryType.TO_OFFICE);
             s1.setStatus(ShipmentStatus.REGISTERED);
-            // snapshot addresses
             s1.setFromCity(alice.getCity());
             s1.setFromAddressLine(alice.getAddress());
             s1.setToCity(bob.getCity());

@@ -29,7 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/reports/**", "/clients/**", "/companies/**", "/offices/**", "/admin/**")
                         .hasAnyRole("EMPLOYEE", "ADMIN")
 
-                        // (Optional dev) H2 console
+                        // H2 console
                         .requestMatchers("/h2-console/**").permitAll()
 
                         // Everything else requires login
@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .permitAll()
                 );
 
-        // (Optional dev) allow H2 frames
+        // allow H2 frames
         http.headers(h -> h.frameOptions(f -> f.sameOrigin()));
 
         return http.build();

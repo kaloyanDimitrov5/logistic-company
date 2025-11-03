@@ -28,7 +28,6 @@ public class AdminEmployeesController {
     private final OfficeService officeService;
     private final AdminService adminService;
 
-    // Existing promote form (kept)
     @GetMapping("/new")
     public String promoteForm(Model model) {
         model.addAttribute("form", new PromoteForm());
@@ -48,7 +47,7 @@ public class AdminEmployeesController {
         return "redirect:/reports/employees";
     }
 
-    // NEW: Create-Employee (brand-new user)
+    // Create-Employee
     @GetMapping("/create")
     public String createEmployeeForm(Model model) {
         if (!model.containsAttribute("form")) {
@@ -62,7 +61,7 @@ public class AdminEmployeesController {
     @PostMapping("/create")
     public String createEmployee(@ModelAttribute CreateEmployeeForm f, RedirectAttributes ra) {
         try {
-            // 1) Create user (+ encode password)
+            // 1) Create user
             User u = userService.createUser(f.getFullName(), f.getEmail(), f.getPassword(), true);
             // 2) Grant EMPLOYEE role
             userService.grantRole(u.getId(), RoleType.EMPLOYEE);
@@ -82,9 +81,9 @@ public class AdminEmployeesController {
 
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
-        var emp = adminService.getEmployee(id);        // add this in service
+        var emp = adminService.getEmployee(id);
         var form = new PromoteForm();
-        form.setEmail(emp.getUser().getEmail());       // read-only on the form
+        form.setEmail(emp.getUser().getEmail());
         form.setCompanyId(emp.getCompany() != null ? emp.getCompany().getId() : null);
         form.setOfficeId(emp.getOffice() != null ? emp.getOffice().getId() : null);
         form.setPosition(emp.getPosition());
@@ -101,7 +100,7 @@ public class AdminEmployeesController {
     public String update(@PathVariable Long id, @ModelAttribute PromoteForm f, RedirectAttributes ra) {
         Company c = f.getCompanyId() != null ? companyService.get(f.getCompanyId()) : null;
         Office o  = f.getOfficeId()  != null ? officeService.get(f.getOfficeId())   : null;
-        adminService.updateEmployee(id, c, o, f.getPosition()); // new service method
+        adminService.updateEmployee(id, c, o, f.getPosition());
         ra.addFlashAttribute("success", "Employee updated.");
         return "redirect:/reports/employees";
     }

@@ -48,7 +48,7 @@ public class ClientsController {
         ClientProfile c = clientRepo.findById(id).orElseThrow();
         ClientForm form = new ClientForm();
         form.setFullName(c.getUser().getFullName());
-        form.setEmail(c.getUser().getEmail()); // locked
+        form.setEmail(c.getUser().getEmail());
         form.setPhone(c.getPhone());
         form.setCity(c.getCity());
         form.setAddress(c.getAddress());
@@ -79,7 +79,7 @@ public class ClientsController {
     public static class ClientForm {
         private String fullName;
         private String email;
-        private String password; // only used for new
+        private String password;
         private String phone;
         private String city;
         private String address;

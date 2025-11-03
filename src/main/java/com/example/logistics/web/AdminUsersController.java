@@ -37,7 +37,7 @@ public class AdminUsersController {
         User u = userService.getById(id);
         EditUserForm form = EditUserForm.from(u);
 
-        // existing profiles (if any)
+        // existing profiles
         ClientProfile cp = clientProfileRepo.findByUserId(u.getId()).orElse(null);
         EmployeeProfile ep = employeeProfileRepo.findByUserId(u.getId()).orElse(null);
 
@@ -64,7 +64,7 @@ public class AdminUsersController {
         // 1) basic fields
         userService.updateBasics(id, f.getFullName(), f.getEmail(), f.isEnabled());
 
-        // 2) replace roles exactly with the checkboxes
+        // 2) replace roles with the checkboxes
         var desired = new java.util.ArrayList<RoleType>();
         if (f.isRoleAdmin())    desired.add(RoleType.ADMIN);
         if (f.isRoleEmployee()) desired.add(RoleType.EMPLOYEE);
@@ -78,7 +78,6 @@ public class AdminUsersController {
                 var office  = officeService.get(ef.getOfficeId());
                 adminService.createEmployee(id, company, office, ef.getPosition());
             } else {
-                // optional: update existing profile with the new company/office/position
                 adminService.updateEmployeeByUserId(id, ef.getCompanyId(), ef.getOfficeId(), ef.getPosition());
             }
         } else {
@@ -113,7 +112,7 @@ public class AdminUsersController {
 
     @PostMapping("/{id}/client/remove")
     public String removeClient(@PathVariable Long id) {
-        adminService.removeClientProfile(id); // implement as needed (or soft-delete)
+        adminService.removeClientProfile(id);
         return "redirect:/admin/users/{id}";
     }
 
@@ -129,7 +128,7 @@ public class AdminUsersController {
 
     @PostMapping("/{id}/employee/remove")
     public String removeEmployee(@PathVariable Long id) {
-        adminService.removeEmployeeProfile(id); // implement if not present
+        adminService.removeEmployeeProfile(id);
         return "redirect:/admin/users/{id}";
     }
 

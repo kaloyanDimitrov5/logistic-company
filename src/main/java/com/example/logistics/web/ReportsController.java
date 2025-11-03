@@ -42,22 +42,16 @@ public class ReportsController {
         model.addAttribute("title", "Shipments");
         model.addAttribute("subtitle", "Report of all registered shipments");
         model.addAttribute("shipments", shipmentService.all());
-        return "reports/shipments"; // unified shipments table
+        return "reports/shipments";
     }
 
-    // 4) Not delivered (preferred path)
+    // 4) Not delivered
     @GetMapping("/shipments/not-delivered")
     public String notDelivered(Model model) {
         model.addAttribute("title", "Shipments");
         model.addAttribute("subtitle", "Not delivered yet");
         model.addAttribute("shipments", shipmentService.notDelivered());
         return "reports/shipments";
-    }
-
-    // 4a) Alias for your old/broken link from the screenshot
-    @GetMapping("/not-delivered")
-    public String aliasNotDelivered() {
-        return "redirect:/reports/shipments/not-delivered";
     }
 
     // 5) By employee (registered by the employee's USER id)
@@ -91,8 +85,6 @@ public class ReportsController {
     }
 
     // 8) Revenue in period
-    //    - GET without params renders a small form
-    //    - GET with ?from=...&to=... returns the result
     @GetMapping("/revenue")
     public String revenue(
             @RequestParam(required = false)
@@ -107,6 +99,6 @@ public class ReportsController {
             model.addAttribute("to", to);
             model.addAttribute("revenue", shipmentService.revenueBetween(from, to));
         }
-        return "reports/revenue"; // form + optional result
+        return "reports/revenue";
     }
 }

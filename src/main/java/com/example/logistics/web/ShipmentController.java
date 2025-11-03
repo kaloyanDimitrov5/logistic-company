@@ -71,8 +71,7 @@ public class ShipmentController {
             toOffice = officeRepo.findById(f.getToOfficeId()).orElseThrow();
         }
 
-        // For demo we skip storing employee profile — we only need user on registeredBy
-        EmployeeProfile registeredBy = null; // keep null if you haven't created profiles UI yet
+        EmployeeProfile registeredBy = null;
 
         shipmentService.createShipment(
                 sender, recipient,
@@ -155,7 +154,7 @@ public class ShipmentController {
         private String fromAddress;
         private String toCity;
         private String toAddress;
-        private Long toOfficeId; // used when deliveryType=OFFICE
+        private Long toOfficeId;
     }
 
     @Data
